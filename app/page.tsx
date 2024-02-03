@@ -83,15 +83,15 @@ export default async function Page(props) {
         meet your project's needs.
       </div>
       <div>
-        <ListItem href="/examples">[navigation] [hero section]</ListItem>
+        {/* <ListItem href="/examples">[navigation] [hero section]</ListItem>
         <ListItem href="/examples/full-section">[navigation] [full dvh sections]</ListItem>
         <ListItem href="/examples/half-section">[navigation] [½ dvh sections]</ListItem>
         <ListItem href="/examples/no-sections">[navigation] [naked components]</ListItem>
-        <ListItem href="/examples/forms">[navigation] [form components]</ListItem>
+        <ListItem href="/examples/forms">[navigation] [form components]</ListItem> */}
         <ListItem href="/examples/authentication">Authentication to API key</ListItem>
-        <ListItem href="/examples/files">File management</ListItem>
+        {/* <ListItem href="/examples/files">File management</ListItem>
         <ListItem href="/examples/post">[navigation] [blog post] [footer]</ListItem>
-        <ListItem href="/examples/invoices">Invoice management</ListItem>
+        <ListItem href="/examples/invoices">Invoice management</ListItem> */}
       </div>
     </DefaultLayout>
   );

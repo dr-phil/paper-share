@@ -7,11 +7,14 @@ import GlobalModalManager from '@system/modals/GlobalModalManager';
 import Input from '@system/Input';
 import KeyHeader from '@system/KeyHeader';
 import MonospacePreview from '@system/MonospacePreview';
+import Paper from "@components/Paper"
 import Page from '@components/Page';
 import ThinAppLayout from '@system/layouts/ThinAppLayout';
 
 import { P } from '@system/typography';
 import { FormHeading, FormParagraph, InputLabel } from '@system/typography/forms';
+import { highlightSelection } from '@root/common/highlight';
+import CommentBar from '@root/components/Sidebar';
 
 async function onAuthenticate({ email, password }) {
   let result;
@@ -65,10 +68,24 @@ function ExampleForms(props) {
   const [currentError, setError] = useState<string | null>(null);
   const [currentModal, setModal] = React.useState<Record<string, any> | null>(null);
   const [currentUser, setUser] = React.useState<Record<string, any> | null>(null);
+  const [name, setName] = React.useState<string>('');
   const [key, setKey] = React.useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+
+  const [selections, setSelections] = useState<string[] | []>([]);
+
+  const process = () => {
+      const s: string = window.getSelection()?.toString() || '';
+      if (s === '') {
+        return;
+      }
+      setSelections(prev => [...prev, s]);
+      highlightSelection();
+  
+  }
+
 
   return (
     <Page
@@ -78,57 +95,36 @@ function ExampleForms(props) {
     >
       <KeyHeader onInputChange={setKey} onHandleThemeChange={Utilities.onHandleThemeChange} value={key} />
       <ThinAppLayout>
-        <FormHeading>Sign in</FormHeading>
+        <FormHeading>Who even are you</FormHeading>
         <FormParagraph>
-          Enhance your experience by signing in or creating an account. Simply enter your e-mail and password to get started. Please note that our site prioritizes your privacy and
-          does not use cookies for tracking.
+          Let [Phil] know who you are none of that anonymous stuff
         </FormParagraph>
-        <FormParagraph>
-          It also does not use local storage. As a result, you'll need to manually input your API key to use <strong>api.internet.dev</strong> each time.
-        </FormParagraph>
-        <FormParagraph>Remember to handle your API key with care for security purposes. This is just an example template.</FormParagraph>
-        <InputLabel style={{ marginTop: 48 }}>E-mail</InputLabel>
-        <Input onChange={(e) => setEmail(e.target.value)} name="email" style={{ marginTop: 8 }} type="text" placeholder="Your e-mail" value={email} />
-        <InputLabel style={{ marginTop: 24 }}>Password</InputLabel>
-        <Input onChange={(e) => setPassword(e.target.value)} placeholder="Your password" name="password" style={{ marginTop: 8 }} type="password" value={password} />
+        <InputLabel style={{ marginTop: 48 }}>Name given to you at birth 😮‍💨</InputLabel>
+        <Input onChange={(e) => setName(e.target.value)} name="email" style={{ marginTop: 8 }} type="text" placeholder="cornelius schroder 😎" value={name} />
         <Button
           loading={loading}
           onClick={async () => {
-            if (Utilities.isEmpty(email)) {
+
+            if (Utilities.isEmpty(name)) {
               setModal({
                 name: 'ERROR',
-                message: 'You must provide an e-mail.',
+                message: 'You must provide a name.',
               });
               return;
             }
 
-            if (Utilities.isEmpty(password)) {
-              setModal({
-                name: 'ERROR',
-                message: 'You must provide a password.',
-              });
-              return;
-            }
-
-            if (password.length < 4) {
-              setModal({
-                name: 'ERROR',
-                message: 'You must use at least 4 characters for your password.',
-              });
-              return;
-            }
 
             setLoading(true);
-            const response = await onAuthenticate({ email, password });
+            await new Promise(res => setTimeout(res, 1000));
             setLoading(false);
-            if (!response) {
-              setModal({
-                name: 'ERROR',
-                message: 'Something went wrong. This is also a lazy message. Ideally the error message would have told you that you forgot to put your email or password.',
-              });
-              return;
-            }
-            setUser(response.user);
+            // if (!response) {
+            //   setModal({
+            //     name: 'ERROR',
+            //     message: 'Something went wrong. This is also a lazy message. Ideally the error message would have told you that you forgot to put your email or password.',
+            //   });
+            //   return;
+            // }
+            // setUser(response.user);
           }}
           style={{ marginTop: 24, width: '100%' }}
         >
@@ -136,58 +132,11 @@ function ExampleForms(props) {
         </Button>
         <P href="/">← Return home</P>
 
-        {currentUser ? (
-          <>
-            <FormHeading style={{ marginTop: 64 }}>Your user data</FormHeading>
-            <FormParagraph>
-              You can grab your API key from the API response below. If you're modifying this template, you will need to implement your own session management if you want to
-              provide a better user experience.
-            </FormParagraph>
-            <FormParagraph>If you verify your e-mail, your user account level should update.</FormParagraph>
-            <MonospacePreview style={{ marginTop: 24 }} title="User Response - /api/users/authenticate">
-              {JSON.stringify(currentUser, null, 2)}
-            </MonospacePreview>
-            <P
-              style={{ cursor: 'pointer' }}
-              onClick={async () => {
-                const response = await onAuthenticate({ email, password });
-                if (!response) {
-                  setModal({
-                    name: 'ERROR',
-                    message: 'Something went wrong. This is also a lazy message. Ideally the error message would have told you that you forgot to put your email or password.',
-                  });
-                  return;
-                }
-                setUser(response.user);
-              }}
-            >
-              → Refresh
-            </P>
-            <P
-              style={{ cursor: 'pointer' }}
-              onClick={async () => {
-                const response = await onRefreshAPIKey({ email, password });
-                if (!response) {
-                  setModal({
-                    name: 'ERROR',
-                    message: 'Something went wrong. This is also a lazy message. Ideally the error message would have told you that you forgot to put your email or password.',
-                  });
-                  return;
-                }
-                setUser(response.user);
-              }}
-            >
-              → Reset API key
-            </P>
-            <P
-              style={{ cursor: 'pointer' }}
-              onClick={() => {
-                setUser(null);
-              }}
-            >
-              ↑ Hide user information
-            </P>
-          </>
+        {name ? (
+          <div style={{display:'flex', width: '100%'}}>
+            <Paper handleSelectionChange={process}/>
+            <CommentBar highlights={selections} />
+          </div>
         ) : null}
       </ThinAppLayout>
       <GlobalModalManager currentModal={currentModal} setModal={setModal} onHandleThemeChange={Utilities.onHandleThemeChange} />
